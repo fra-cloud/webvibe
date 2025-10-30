@@ -4,12 +4,15 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!randomBtn) return; // Exit if button doesn't exist
     
     randomBtn.addEventListener('click', function() {
-        // Get current page path to determine base path
-        const currentPath = window.location.pathname;
-        const isInProjectsFolder = currentPath.includes('/projects/');
+        // Get the base URL (protocol + host + path to website root)
+        const baseUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/');
         
-        // Define all possible destinations with absolute paths from root
-        const allPages = [
+        // Check if we're in a subfolder by looking at the current file name
+        const currentFile = window.location.pathname.split('/').pop();
+        const isInProjectsFolder = window.location.pathname.includes('/projects/');
+        
+        // Define all possible destinations
+        const pages = [
             'projects/project1.html',
             'projects/project2.html',
             'projects/project3.html',
@@ -23,17 +26,15 @@ document.addEventListener('DOMContentLoaded', function() {
             'index.html#ping'
         ];
         
-        // Adjust paths based on current location
-        const pages = allPages.map(page => {
-            if (isInProjectsFolder) {
-                return '../' + page;
-            }
-            return page;
-        });
-        
         // Select random page
         const randomIndex = Math.floor(Math.random() * pages.length);
-        const randomPage = pages[randomIndex];
+        let randomPage = pages[randomIndex];
+        
+        // Construct the correct URL based on current location
+        if (isInProjectsFolder) {
+            // We're in projects folder, need to go up one level
+            randomPage = '../' + randomPage;
+        }
         
         // Navigate to the selected page
         window.location.href = randomPage;
